@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import ToDoList, Item
 from .forms import CreateNewList
 
@@ -14,12 +14,16 @@ def home(response):
 
 
 def create(response):
-        if response == "POST":
-                form = CreateNewList()
+        if response.method == "POST":
+                form = CreateNewList(response.POST)
                 if form.is_valid():
                         n = form.cleaned_data["name"]
                         t =ToDoList(name=n)
                         t.save()
+                        return HttpResponseRedirect("/%i" %t.id)
         else:
                 form = CreateNewList()
-        return render(response,"main/create.html",{"form": form})
+        return render(response,"main/create.html",{"form" : form})
+
+
+
